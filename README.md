@@ -5,6 +5,8 @@ Two simple apps which connect with each other using free port exchanging data in
 - <b> uptime </b> - returns a life time of server <br/>
 - <b> info </b> - returns a server create date <br/>
 - <b> stop </b> - turns off a server app and a client app <br/>
+- <b> msg-send </b> - send a message <br/>
+- <b> msg-read </b> - read a message <br/>
 
 # Requirements
 - socket
