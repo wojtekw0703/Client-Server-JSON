@@ -8,6 +8,12 @@ import datetime
 created = datetime.datetime.now() 
 start = time.perf_counter() 
 
+def msg_read():
+    pass
+
+def msg_send():
+    pass
+
 def uptime_fun(): 
     end = time.perf_counter()
     duration = end-start
@@ -31,7 +37,9 @@ def help_fun():
         {
             "option 1": "uptime - zwraca czas zycia serwera",
             "option 2": "info - zwraca date utworzenia serwera",
-            "option 3": "stop - zatrzymuje serwer i klienta"
+            "option 3": "stop - zatrzymuje serwer i klienta",
+            "option 4": "msg-read - read all messages",
+            "option 5": "msg-send - send a message" 
         }
     }
     result = json.dumps(dictionary)
@@ -41,7 +49,9 @@ def help_fun():
 switcher = {
     "uptime":  uptime_fun,
     "info":  info_fun,
-    "help":  help_fun
+    "help":  help_fun,
+    "msg-read":  msg_read,
+    "msg-send":  msg_send,
     }
 
 
