@@ -2,7 +2,11 @@ import socket
 import json
 import time
 from sys import exit
+from tinydb import TinyDB,Query
 import datetime
+
+db = TinyDB('D:/IT/python/SocketApp/userdatabase.json')
+table = db.table('users')
 
 # Launch program date
 created = datetime.datetime.now() 
@@ -13,6 +17,7 @@ def msg_read():
 
 def msg_send():
     pass
+
 
 def uptime_fun(): 
     end = time.perf_counter()
@@ -55,6 +60,45 @@ switcher = {
     }
 
 
+   
+
+
+def user_mode():
+    print("Create | Login")
+    option = input("->")
+    if option.lower()=="create":
+        print("New user - login")
+        new_login = input("->")
+        print("New user - password")
+        new_password = input("->")
+        # append to user database above login and pass
+
+    elif option.lower()=="login":
+        print("Login:")
+        login = input("->")
+        print("Password:")
+        password = input("->")
+        # if  login in database['login'] and password in database['password']:
+        while(True):
+            # receive data stream. it won't accept data packet greater than 1024 bytes
+            data = conn.recv(1024).decode()
+            message = input(" -> ")  # take input
+        
+            if not message:
+                break
+
+            if data == "stop":
+                exit(0) # stop server app
+            else:
+                answer = switcher.get(data,"Invalid command")
+                result = answer()
+                conn.send(result.encode())
+            conn.close()  # close the connection
+
+def admin_mode():
+    pass
+     
+
 def server_program():
     # get the hostname
     host = socket.gethostname()
@@ -68,21 +112,14 @@ def server_program():
     server_socket.listen(2)
     conn, address = server_socket.accept()  # accept new connection
     print("Connection from: " + str(address))
-    while True:
-        # receive data stream. it won't accept data packet greater than 1024 bytes
-        data = conn.recv(1024).decode()
-        if not data:
-            # if data is not received break
-            break
-        print("Command from connected user: " + str(data))
-        if data == "stop":
-            exit(0) # stop server app
-        else:
-                answer = switcher.get(data,"Invalid command")
-                result = answer()
-                conn.send(result.encode())
-    conn.close()  # close the connection
-
+    
+    print("User | Admin ?")
+    mode = input("->")
+    
+    if mode.lower()=="user":
+        user_mode()
+    elif mode.lower()=="admin":
+        admin_mode()
 
 if __name__ == '__main__':
     server_program() 
