@@ -13,6 +13,7 @@ Two simple apps which connect with each other using free port exchanging data in
 - json
 - sys
 - datetime
+- TinyDB
 
 # Installation
 1. Clone the entire repo
