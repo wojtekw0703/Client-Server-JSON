@@ -96,8 +96,8 @@ def user_mode():
             conn.close()  # close the connection
 
 def admin_mode():
-    pass
-     
+    print("All messages | other option")
+    option = input("->")
 
 def server_program():
     # get the hostname
