@@ -25,18 +25,25 @@ server_socket.listen(2)
 conn, address = server_socket.accept()  
 
 def msg_read(login):
-    pass
+    print(db_message.get(login==login))
 
 def msg_send(login):
-    pass
+    while True:
+        msg = input("Type message ->")
+        conn.send(msg.encode())
+        #user_dashboard(login)
+  
 
 def user_dashboard(login):
     print("Send message (msg-send) | Read message (msg-read)")
     option = input("->")
+    
     if option.lower() == "msg-send":
         msg_send(login)
     elif option.lower() == "msg-read":
         msg_read(login)
+    else:
+        exit(0) # stop server app
 
 
 def uptime_fun(): 
