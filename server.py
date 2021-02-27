@@ -5,18 +5,35 @@ from sys import exit
 from tinydb import TinyDB,Query
 import datetime
 
-db = TinyDB('D:/IT/python/SocketApp/userdatabase.json')
-table = db.table('users')
+db_user = TinyDB('D:/IT/python/SocketApp/user_database.json')
+table_user = db_user.table('users')
 
 # Launch program date
 created = datetime.datetime.now() 
 start = time.perf_counter() 
 
-def msg_read():
+
+# get the hostname
+host = socket.gethostname()
+port = 5000  # initiate port no above 1024
+server_socket = socket.socket()  # get instance
+server_socket.bind((host, port))  # bind host address and port together
+server_socket.listen(2)
+conn, address = server_socket.accept()  
+
+def msg_read(login):
     pass
 
-def msg_send():
+def msg_send(login):
     pass
+
+def user_dashboard(login):
+    print("Send message (msg-send) | Read message (msg-read)")
+    option = input("->")
+    if option.lower() == "msg-send":
+        msg_send(login)
+    elif option.lower() == "msg-read":
+        msg_read(login)
 
 
 def uptime_fun(): 
@@ -29,12 +46,14 @@ def uptime_fun():
     result = json.dumps(dictionary) # converting object into a json string
     return result
 
+
 def info_fun():  
     dictionary = {
         "created:" : str(created)
     }
     result = json.dumps(dictionary)
     return result
+
 
 def help_fun(): 
     dictionary = {
@@ -60,57 +79,43 @@ switcher = {
     }
 
 
-   
-
-
 def user_mode():
     print("Create | Login")
     option = input("->")
     if option.lower()=="create":
         print("New user - login")
         new_login = input("->")
+       
         print("New user - password")
         new_password = input("->")
-        # append to user database above login and pass
+       
+        table_user.insert({'login': new_login, 'password': new_password})
+        user_mode()
 
     elif option.lower()=="login":
         print("Login:")
         login = input("->")
+       
         print("Password:")
         password = input("->")
-        # if  login in database['login'] and password in database['password']:
-        while(True):
-            # receive data stream. it won't accept data packet greater than 1024 bytes
-            data = conn.recv(1024).decode()
-            message = input(" -> ")  # take input
-        
-            if not message:
-                break
+       
+        user_existing = db_user.search((login == login) & (password == password))
+        if not user_existing:
+            print("Error")
+            time.sleep(2)
+            user_mode()
+        else:
+            user_dashboard(login)    
 
-            if data == "stop":
-                exit(0) # stop server app
-            else:
-                answer = switcher.get(data,"Invalid command")
-                result = answer()
-                conn.send(result.encode())
-            conn.close()  # close the connection
+
 
 def admin_mode():
-    print("All messages | other option")
-    option = input("->")
+    pass
+
+
+
 
 def server_program():
-    # get the hostname
-    host = socket.gethostname()
-    port = 5000  # initiate port no above 1024
-
-    server_socket = socket.socket()  # get instance
-    # look closely. The bind() function takes tuple as argument
-    server_socket.bind((host, port))  # bind host address and port together
-
-    # configure how many client the server can listen simultaneously
-    server_socket.listen(2)
-    conn, address = server_socket.accept()  # accept new connection
     print("Connection from: " + str(address))
     
     print("User | Admin ?")
@@ -120,6 +125,9 @@ def server_program():
         user_mode()
     elif mode.lower()=="admin":
         admin_mode()
+    
+    #conn.close()  # close the connection
 
+   
 if __name__ == '__main__':
     server_program() 
