@@ -8,6 +8,9 @@ import datetime
 db_user = TinyDB('D:/IT/python/SocketApp/user_database.json')
 table_user = db_user.table('users')
 
+db_message = TinyDB('D:/IT/python/SocketApp/message_database.json')
+message_user = db_message.table('messages')
+
 # Launch program date
 created = datetime.datetime.now() 
 start = time.perf_counter() 
