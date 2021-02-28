@@ -7,6 +7,7 @@ import datetime
 
 db_user = TinyDB('D:/IT/python/SocketApp/user_database.json')
 table_user = db_user.table('users')
+User = Query()
 
 db_message = TinyDB('D:/IT/python/SocketApp/message_database.json')
 message_user = db_message.table('messages')
@@ -30,8 +31,13 @@ def msg_read(login):
 def msg_send(login):
     while True:
         msg = input("Type message ->")
-        conn.send(msg.encode())
-        #user_dashboard(login)
+        dictionary = {
+        "login:" : login,   
+        "message:" : msg
+        }
+        result = json.dumps(dictionary) # converting object into a json string
+        conn.send(result.encode())
+        user_dashboard(login)
   
 
 def user_dashboard(login):
@@ -92,30 +98,35 @@ switcher = {
 def user_mode():
     print("Create | Login")
     option = input("->")
+    print("\n")
+
     if option.lower()=="create":
         print("New user - login")
         new_login = input("->")
-       
+        print("\n")
+
         print("New user - password")
         new_password = input("->")
-       
+        print("\n")
+        
         table_user.insert({'login': new_login, 'password': new_password})
         user_mode()
 
     elif option.lower()=="login":
         print("Login:")
         login = input("->")
+        print("\n")
        
         print("Password:")
         password = input("->")
-       
-        user_existing = db_user.search((login == login) & (password == password))
-        if not user_existing:
+        print("\n")
+
+        if table_user.contains(User.login == login) and table_user.contains(User.password == password):
+            user_dashboard(login)  
+        else:
             print("Error")
             time.sleep(2)
             user_mode()
-        else:
-            user_dashboard(login)    
 
 
 
@@ -130,6 +141,7 @@ def server_program():
     
     print("User | Admin ?")
     mode = input("->")
+    print("\n")
     
     if mode.lower()=="user":
         user_mode()
