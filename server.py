@@ -4,6 +4,7 @@ import time
 from sys import exit
 from tinydb import TinyDB,Query
 import datetime
+import pprint
 
 db_user = TinyDB('D:/IT/python/SocketApp/user_database.json')
 table_user = db_user.table('users')
@@ -26,21 +27,27 @@ server_socket.listen(2)
 conn, address = server_socket.accept()  
 
 def msg_read(login):
-    print(db_message.get(login==login))
+    print(message_user.search(User.login==login))
 
 def msg_send(login):
     while True:
-        msg = input("Type message ->")
+        msg = input("Type message ->")[:255]
+       
         dictionary = {
         "login:" : login,   
         "message:" : msg
         }
         result = json.dumps(dictionary) # converting object into a json string
         conn.send(result.encode())
+        
+        message_user.insert({'login': login, 'message': msg})
         user_dashboard(login)
   
 
 def user_dashboard(login):
+    if message_user.count(User.login == login) > 5:
+                print(f"{login} - inbox overflow \n")
+                user_mode()
     print("Send message (msg-send) | Read message (msg-read)")
     option = input("->")
     
@@ -131,7 +138,7 @@ def user_mode():
 
 
 def admin_mode():
-    pass
+    pprint.pprint(message_user.all())
 
 
 
@@ -148,7 +155,7 @@ def server_program():
     elif mode.lower()=="admin":
         admin_mode()
     
-    #conn.close()  # close the connection
+    conn.close()  # close the connection
 
    
 if __name__ == '__main__':
