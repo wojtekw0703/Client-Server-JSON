@@ -6,7 +6,7 @@
         },
         "2": {
             "login": "adam",
-            "password": "OOp"
+            "password": "oop"
         },
         "3": {
             "login": "andrzej",
@@ -15,6 +15,10 @@
         "4": {
             "login": "kasia",
             "password": "pep8"
+        },
+        "5": {
+            "login": "aneta",
+            "password": "rubyonrails"
         }
     }
 }

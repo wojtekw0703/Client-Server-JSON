@@ -27,7 +27,8 @@ server_socket.listen(2)
 conn, address = server_socket.accept()  
 
 def msg_read(login):
-    print(message_user.search(User.login==login))
+    pprint.pprint(message_user.search(User.login==login))
+    user_dashboard(login)
 
 def msg_send(login):
     while True:
@@ -66,16 +67,16 @@ def uptime_fun():
     dictionary = {
         "life time:" : str(duration) +"s"
     }
-    result = json.dumps(dictionary) # converting object into a json string
-    return result
+    pprint.pprint(dictionary)
+    server_program()
 
 
 def info_fun():  
     dictionary = {
         "created:" : str(created)
     }
-    result = json.dumps(dictionary)
-    return result
+    pprint.pprint(dictionary)
+    server_program()
 
 
 def help_fun(): 
@@ -85,21 +86,11 @@ def help_fun():
             "option 1": "uptime - zwraca czas zycia serwera",
             "option 2": "info - zwraca date utworzenia serwera",
             "option 3": "stop - zatrzymuje serwer i klienta",
-            "option 4": "msg-read - read all messages",
-            "option 5": "msg-send - send a message" 
         }
     }
-    result = json.dumps(dictionary)
-    return result
+    pprint.pprint(dictionary)
+    server_program()
 
-# switch-case declaration
-switcher = {
-    "uptime":  uptime_fun,
-    "info":  info_fun,
-    "help":  help_fun,
-    "msg-read":  msg_read,
-    "msg-send":  msg_send,
-    }
 
 
 def user_mode():
@@ -139,21 +130,28 @@ def user_mode():
 
 def admin_mode():
     pprint.pprint(message_user.all())
+    server_program()
 
+# switch-case declaration
+switcher = {
+    "uptime": uptime_fun,
+    "info": info_fun,
+    "help": help_fun,
+    "user": user_mode,
+    "admin": admin_mode
+    }
 
 
 
 def server_program():
-    print("Connection from: " + str(address))
+    print("Connection from: " + str(address) + "\n")
     
-    print("User | Admin ?")
+    print("User | Admin | Help")
     mode = input("->")
     print("\n")
-    
-    if mode.lower()=="user":
-        user_mode()
-    elif mode.lower()=="admin":
-        admin_mode()
+
+    redirection = switcher.get(mode.lower(),"Invalid command")
+    redirection()
     
     conn.close()  # close the connection
 
