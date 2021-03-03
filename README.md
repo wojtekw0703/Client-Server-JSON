@@ -15,10 +15,10 @@ Two simple apps which connect with each other using free port exchanging data in
 - datetime
 - TinyDB
 
-# Screenshots
-![1](https://user-images.githubusercontent.com/33324211/109801555-ece18d80-7c1e-11eb-8df0-5002ed608d98.PNG)
+# Screenshots and video 
+#### <a href="https://www.youtube.com/watch?v=4dhfFexi9I4&feature=youtu.be" target="_blank">Video</a> </br>
 ![2](https://user-images.githubusercontent.com/33324211/109801566-eeab5100-7c1e-11eb-820e-c6ea9d25bf1e.PNG)
-![3](https://user-images.githubusercontent.com/33324211/109801568-efdc7e00-7c1e-11eb-8692-bc15ff377608.PNG)
+![3](https://user-images.githubusercontent.com/33324211/109801568-efdc7e00-7c1e-11eb-8692-bc15ff377608.PNG) 
 
 # Installation
 1. Clone the entire repo
