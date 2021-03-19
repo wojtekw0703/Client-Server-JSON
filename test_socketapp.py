@@ -24,7 +24,5 @@ class TestServer(unittest.TestCase):
         self.assertEqual(account,[{'login': 'test', 'password': 'test'}]) 
     
 
-
-
 if __name__ == "__main__":
     unittest.main() 
