@@ -24,7 +24,8 @@ port = 5000  # initiate port no above 1024
 server_socket = socket.socket()  # get instance
 server_socket.bind((host, port))  # bind host address and port together
 server_socket.listen(2)
-conn, address = server_socket.accept()  
+conn, address = server_socket.accept() 
+
 
 def msg_read(login):
     pprint.pprint(message_user.search(User.login==login))
@@ -39,11 +40,11 @@ def msg_send(login):
         "message:" : msg
         }
         result = json.dumps(dictionary) # converting object into a json string
-        conn.send(result.encode())
+        # conn.send(result.encode())
         
         message_user.insert({'login': login, 'message': msg})
         user_dashboard(login)
-  
+
 
 def user_dashboard(login):
     if message_user.count(User.login == login) > 5:
@@ -144,7 +145,7 @@ switcher = {
 
 
 def server_program():
-    print("Connection from: " + str(address) + "\n")
+    # print("Connection from: " + str(address) + "\n")
     
     print("User | Admin | Help")
     mode = input("->")
@@ -153,7 +154,7 @@ def server_program():
     redirection = switcher.get(mode.lower(),"Invalid command")
     redirection()
     
-    conn.close()  # close the connection
+    # conn.close()  # close the connection
 
    
 if __name__ == '__main__':
