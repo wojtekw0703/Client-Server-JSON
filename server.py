@@ -1,9 +1,10 @@
+import datetime
+import pprint
 import socket
 import time
 from sys import exit
-from tinydb import TinyDB, Query
-import datetime
-import pprint
+
+from tinydb import Query, TinyDB
 
 db_user = TinyDB("D:/IT/python/SocketApp/user_database.json")
 table_user = db_user.table("users")

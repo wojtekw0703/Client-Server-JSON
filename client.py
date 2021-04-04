@@ -1,10 +1,10 @@
-import socket
 import json
-from sys import exit
-from tinydb import TinyDB, Query
-import time
 import pprint
+import socket
+import time
+from sys import exit
 
+from tinydb import Query, TinyDB
 
 db_user = TinyDB("D:/IT/python/SocketApp/user_database.json")
 table_user = db_user.table("users")
@@ -48,7 +48,7 @@ def user_dashboard(login):
     elif option.lower() == "msg-read":
         msg_read(login)
     else:
-        exit(0)  # stop server app
+        exit(0)
 
 
 def user_mode():
