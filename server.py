@@ -17,13 +17,15 @@ message_user = db_message.table("messages")
 created = datetime.datetime.now()
 start = time.perf_counter()
 
-# get the hostname
-host = socket.gethostname()
-port = 5000  # initiate port no above 1024
-server_socket = socket.socket()  # get instance
-server_socket.bind((host, port))  # bind host address and port together
-server_socket.listen(2)
-conn, address = server_socket.accept()
+
+def init_connection():
+    host = socket.gethostname()
+    port = 5000
+    server_socket = socket.socket()
+    server_socket.bind((host, port))
+    server_socket.listen(2)
+    global conn
+    conn, address = server_socket.accept()
 
 
 def msg_read(login):
@@ -50,7 +52,7 @@ def user_dashboard(login):
     elif option.lower() == "msg-read":
         msg_read(login)
     else:
-        exit(0)  # stop server app
+        exit(0)
 
 
 def uptime_fun():
@@ -122,7 +124,7 @@ def admin_mode():
 
 
 # switch-case declaration
-switcher = {
+command_handlers = {
     "uptime": uptime_fun,
     "info": info_fun,
     "help": help_fun,
@@ -132,13 +134,18 @@ switcher = {
 
 
 def server_program():
+    init_connection()
     # print("Connection from: " + str(address) + "\n")
     print("User | Admin | Help")
     mode = input("->")
-    print("\n")
-    redirection = switcher.get(mode.lower(), "Invalid command")
-    redirection()
-    # conn.close()  # close the connection
+    if mode.lower() not in ["user", "admin", "help"]:
+        print("Not known command")
+        server_program()
+    else:
+        print("\n")
+        redirection = command_handlers.get(mode.lower(), "Invalid command")
+        redirection()
+    conn.close()  # close the connection
 
 
 if __name__ == "__main__":

@@ -11,8 +11,8 @@ def user_dashboard(login):
 
 class TestServer(unittest.TestCase):
     def test_message_database(self):
-        message = message_user.search(User.login == "aneta")
-        self.assertEqual(message, [{"login": "aneta", "message": "I am newbie"}])
+        message = message_user.search(User.login == "wojtek")
+        self.assertEqual(message, [{"login": "wojtek", "message": "Welcome"}])
 
     @patch("builtins.print")
     def test_inbox_overflow(self, mock_print):

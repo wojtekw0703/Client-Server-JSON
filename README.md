@@ -16,6 +16,6 @@ Two simple apps which connect with each other using free port exchanging data in
 
 # Installation
 1. Clone the entire repo
-2. In a root folder launch two terminals
-3. Launch the server app firstly and then the client app
-4. Type a command 
+2. Install requirements
+3. python server.py
+4. python client.py

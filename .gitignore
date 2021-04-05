@@ -1,0 +1,4 @@
+# databases
+*.json
+# pycache
+__pycache__/

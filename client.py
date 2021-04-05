@@ -13,11 +13,13 @@ User = Query()
 db_message = TinyDB("D:/IT/python/SocketApp/message_database.json")
 message_user = db_message.table("messages")
 
-host = socket.gethostname()  # as both code is running on same pc
-port = 5000  # socket server port number
 
-client_socket = socket.socket()  # instantiate
-client_socket.connect((host, port))  # connect to the server
+def connect_with_server():
+    host = socket.gethostname()
+    port = 5000
+    global client_socket
+    client_socket = socket.socket()
+    client_socket.connect((host, port))
 
 
 def msg_read(login):
@@ -29,7 +31,7 @@ def msg_send(login):
     while True:
         msg = input("Type message ->")[:255]
         dictionary = {"login:": login, "message:": msg}
-        result = json.dumps(dictionary)  # converting object into a json string
+        result = json.dumps(dictionary)
         client_socket.send(result.encode())
 
         message_user.insert({"login": login, "message": msg})
@@ -88,6 +90,7 @@ def user_mode():
 
 
 def client_program():
+    connect_with_server()
     user_mode()
     client_socket.close()  # close the connection
 
