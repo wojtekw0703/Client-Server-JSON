@@ -1,4 +1,4 @@
-# Client-Server-JSON
+# Client-Server-JSON :computer: :keyboard:
 
 # About 
 Two simple apps which connect with each other using free port exchanging data in a JSON format. There are a few commands: <br/>
