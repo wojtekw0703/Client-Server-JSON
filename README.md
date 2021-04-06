@@ -1,4 +1,4 @@
-# Client-Server-JSON
+# Client-Server-JSON :computer: :keyboard:
 
 # About 
 Two simple apps which connect with each other using free port exchanging data in a JSON format. There are a few commands: <br/>
@@ -14,7 +14,7 @@ Two simple apps which connect with each other using free port exchanging data in
 ![3](https://user-images.githubusercontent.com/33324211/109801568-efdc7e00-7c1e-11eb-8692-bc15ff377608.PNG) 
 
 
-# Installation
+# How to launch
 1. Clone the entire repo
 2. Install requirements
 3. python server.py
