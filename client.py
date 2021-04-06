@@ -4,15 +4,6 @@ import socket
 import time
 from sys import exit
 
-from tinydb import Query, TinyDB
-
-db_user = TinyDB("D:/IT/python/SocketApp/user_database.json")
-table_user = db_user.table("users")
-User = Query()
-
-db_message = TinyDB("D:/IT/python/SocketApp/message_database.json")
-message_user = db_message.table("messages")
-
 
 def connect_with_server():
     host = socket.gethostname()
