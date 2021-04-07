@@ -14,7 +14,10 @@ def connect_with_server():
 
 
 def msg_read(login):
-    pprint.pprint(message_user.search(User.login == login))
+    query = "SELECT message_content FROM messages WHERE login = %s"
+    cursor.execute(query, (login,))
+    result = cursor.fetchall()
+    print(result)
     user_dashboard(login)
 
 

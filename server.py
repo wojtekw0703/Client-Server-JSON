@@ -9,6 +9,18 @@ from concurrent.futures import ThreadPoolExecutor
 created = datetime.datetime.now()
 start = time.perf_counter()
 
+command_handlers = {
+    "uptime": uptime_fun,
+    "info": info_fun,
+    "read_msg": read_messages,
+}
+
+
+operation_database = {
+    "read": read_data,
+    "insert": insert_data,
+}
+
 
 def connect_database():
     try:
@@ -50,13 +62,13 @@ def info_fun():
 
 
 def read_messages():
-    query = """SELECT * FROM messages"""
+    query = """SELECT login, message_content FROM messages"""
     cursor.execute(
         query,
     )
-    result = cursor.fetchall()
-    for data in result:
-        print(data[1::])
+    messages = cursor.fetchall()
+    for data in messages:
+        print(data)
     print("\n")
     server_program()
 
@@ -77,32 +89,33 @@ def admin_dashboard():
         redirection()
 
 
-def receive_message():
+def read_data():
+    pass
+
+
+def insert_data(data):
+    query = """INSERT INTO messages(login, message_content) VALUES (%s, %s)"""
+    cursor.execute(
+        query,
+        (data[1], data[2]),
+    )
+    connection.commit()
+    print("New message !")
+
+
+def receive_query():
     while True:
         data = None
         data = server_socket.recv(1024).decode()
         if data is not None:
-            query = """INSERT INTO messages(login, message_content) VALUES (%s, %s)"""
-            cursor.execute(
-                query,
-                (data[0], data[1]),
-            )
-            connection.commit()
-            print("New message !")
-
-
-# switch-case declaration
-command_handlers = {
-    "uptime": uptime_fun,
-    "info": info_fun,
-    "read_msg": read_messages,
-}
+            redirection = operation_database.get(data[0].lower(), "Invalid command")
+            redirection(data)
 
 
 def server_program():
     with ThreadPoolExecutor(max_workers=2) as executor:
         executor.submit(admin_dashboard())
-        executor.submit(receive_message())
+        executor.submit(receive_query())
 
     cursor.close()
     conn.close()
