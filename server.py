@@ -89,8 +89,14 @@ def admin_dashboard():
         redirection()
 
 
-def read_data():
-    pass
+def read_data(data):
+    query = """SELECT message_content FROM messages WHERE login = %s"""
+    cursor.execute(
+        query,
+        data[2],
+    )
+    result = cursor.fetchall()
+    conn.send(result.encode())
 
 
 def insert_data(data):
@@ -100,7 +106,6 @@ def insert_data(data):
         (data[1], data[2]),
     )
     connection.commit()
-    print("New message !")
 
 
 def receive_query():
