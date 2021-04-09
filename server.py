@@ -10,15 +10,17 @@ created = datetime.datetime.now()
 start = time.perf_counter()
 
 command_handlers = {
-    "uptime": uptime_fun,
-    "info": info_fun,
-    "read_msg": read_messages,
+    "uptime": uptime_fun,  # returns the server life time
+    "info": info_fun,  # returns date when the server was created
+    "read_msg": read_messages_as_admin,  # displays all messages from user's inbox
 }
 
 
-operation_database = {
-    "read": read_data,
-    "insert": insert_data,
+database_operations = {
+    "check_user": check_user,  # if any user wants to log in, server checks if user is already in database
+    "read_message": read_message,  # if any user want to read a message - retrieve all messages for specific user
+    "insert_message": insert_message,  # if any user send a message - insert to database
+    "insert_person": insert_person,  # if client created a new user - add to database
 }
 
 
@@ -57,11 +59,10 @@ def uptime_fun():
 
 def info_fun():
     print("created: {0}".format(str(created)) + "\n")
-
     server_program()
 
 
-def read_messages():
+def read_messages_as_admin():
     query = """SELECT login, message_content FROM messages"""
     cursor.execute(
         query,
@@ -73,7 +74,7 @@ def read_messages():
     server_program()
 
 
-def admin_dashboard():
+def display_admin_panel():
     print(
         "--------ADMIN PANEL--------\n",
         "option 1: uptime - returns server lifetime\n",
@@ -81,46 +82,87 @@ def admin_dashboard():
         "option 3: read_msg - displays all messages and their senders",
     )
     option = input("->")
-    if option.lower() not in ["uptime", "info", "read_msg"]:
-        print("Not known command")
-        server_program()
-    else:
-        redirection = command_handlers.get(option.lower(), "Invalid command")
-        redirection()
+    return option
 
 
-def read_data(data):
-    query = """SELECT message_content FROM messages WHERE login = %s"""
+def admin_dashboard():
+    while display_admin_panel() not in ["uptime", "info", "read_msg"]:
+        display_admin_panel()
+    redirection = command_handlers.get(display_admin_panel().lower(), "Invalid command")
+    redirection()
+
+
+def check_inbox(login):
+    query = """SELECT COUNT(login) FROM messages WHERE login = %s"""
     cursor.execute(
         query,
-        data[2],
+        login,
     )
-    result = cursor.fetchall()
+    result = cursor.fetchone()
+    connection.commit()
+    if result < 5:
+        return True
+    return False
+
+
+def check_user(data):
+    query = """SELECT login, passwd FROM users WHERE login = %s AND passwd = %s"""
+    cursor.execute(
+        query,
+        data[0],
+        data[1],
+    )
+    result = cursor.fetchone()
+
+    if result is not None:
+        msg = "OK"
+        conn.send(msg.encode())
+
+
+def read_message(data):
+    if check_inbox(data[0]):
+        query = """SELECT message_content FROM messages WHERE login = %s"""
+        cursor.execute(
+            query,
+            data[0],
+        )
+        result = cursor.fetchall()
+    result = "{0} - inbox overflow !".format(data[0])
     conn.send(result.encode())
+    connection.commit()
 
 
-def insert_data(data):
+def insert_message(data):
     query = """INSERT INTO messages(login, message_content) VALUES (%s, %s)"""
     cursor.execute(
         query,
-        (data[1], data[2]),
+        (data[0], data[1]),
     )
     connection.commit()
 
 
-def receive_query():
+def insert_person(data):
+    query = """INSERT INTO users(login, passwd) VALUES (%s, %s)"""
+    cursor.execute(
+        query,
+        (data[0], data[1]),
+    )
+    connection.commit()
+
+
+def receive_query_from_client():
     while True:
         data = None
         data = server_socket.recv(1024).decode()
         if data is not None:
-            redirection = operation_database.get(data[0].lower(), "Invalid command")
-            redirection(data)
+            redirection = database_operations.get(data[0].lower(), "Invalid command")
+            redirection(data[1::])
 
 
 def server_program():
     with ThreadPoolExecutor(max_workers=2) as executor:
         executor.submit(admin_dashboard())
-        executor.submit(receive_query())
+        executor.submit(receive_query_from_client())
 
     cursor.close()
     conn.close()
