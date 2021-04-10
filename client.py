@@ -1,4 +1,5 @@
 import socket
+import pickle
 import time
 from sys import exit
 from concurrent.futures import ThreadPoolExecutor
@@ -36,7 +37,7 @@ def user_dashboard(login):
 
 
 def user_mode():
-    data_to_send = []
+    data = []
     print("Create | Login")
     option = input("->")
     print("\n")
@@ -50,11 +51,13 @@ def user_mode():
         new_password = input("->")
         print("\n")
 
-        data_to_send.append("insert_person")
-        data_to_send.append(new_login)
-        data_to_send.append(new_password)
+        data.append("insert_person")
+        data.append(new_login)
+        data.append(new_password)
 
-        client_socket.send(data_to_send.encode())
+        to_send = pickle.dumps(data)
+        client_socket.send(to_send.encode())
+
         user_mode()
 
     elif option.lower() == "login":
