@@ -69,9 +69,17 @@ def user_mode():
         password = input("->")
         print("\n")
 
-        # send data to server + condition
-        # code
-        user_dashboard(login)
+        data.append("check_user")
+        data.append(login)
+        data.append(password)
+        to_send = pickle.dumps(data)
+        client_socket.send(to_send.encode())
+
+        result = receive_data_from_server()
+        if result == "True":
+            user_dashboard(login)
+        else:
+            user_mode()
     else:
         print("Error")
         time.sleep(2)
@@ -81,6 +89,7 @@ def user_mode():
 def receive_data_from_server():
     while client_socket.recv(1024).decode() is None:
         data = client_socket.recv(1024).decode()
+        return data
 
 
 def client_program():

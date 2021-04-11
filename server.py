@@ -9,20 +9,6 @@ from concurrent.futures import ThreadPoolExecutor
 created = datetime.datetime.now()
 start = time.perf_counter()
 
-command_handlers = {
-    "uptime": uptime_fun,  # returns the server life time
-    "info": info_fun,  # returns date when the server was created
-    "read_msg": read_messages_as_admin,  # displays all messages from user's inbox
-}
-
-
-database_operations = {
-    "check_user": check_user,  # if any user wants to log in, server checks if user is already in database
-    "read_message": read_message,  # if any user want to read a message - retrieve all messages for specific user
-    "insert_message": insert_message,  # if any user send a message - insert to database
-    "insert_person": insert_person,  # if client created a new user - add to database
-}
-
 
 def connect_database():
     try:
@@ -54,12 +40,12 @@ def uptime_fun():
     duration = end - start
     duration = round(duration, 2)
     print("life time: {0}s".format(str(duration)) + "\n")
-    server_program()
+    display_admin_panel()
 
 
 def info_fun():
     print("created: {0}".format(str(created)) + "\n")
-    server_program()
+    display_admin_panel()
 
 
 def read_messages_as_admin():
@@ -71,7 +57,7 @@ def read_messages_as_admin():
     for data in messages:
         print(data)
     print("\n")
-    server_program()
+    display_admin_panel()
 
 
 def display_admin_panel():
@@ -86,7 +72,8 @@ def display_admin_panel():
 
 
 def admin_dashboard():
-    while display_admin_panel() not in ["uptime", "info", "read_msg"]:
+    option = display_admin_panel()
+    while option not in ["uptime", "info", "read_msg"]:
         display_admin_panel()
     redirection = command_handlers.get(display_admin_panel().lower(), "Invalid command")
     redirection()
@@ -159,8 +146,22 @@ def receive_query_from_client():
             redirection(data[1::])
 
 
+command_handlers = {
+    "uptime": uptime_fun,  # returns the server life time
+    "info": info_fun,  # returns date when the server was created
+    "read_msg": read_messages_as_admin,  # displays all messages from user's inbox
+}
+
+database_operations = {
+    "check_user": check_user,  # if any user wants to log in, server checks if user is already in database
+    "read_message": read_message,  # if any user want to read a message - retrieve all messages for specific user
+    "insert_message": insert_message,  # if any user send a message - insert to database
+    "insert_person": insert_person,  # if client created a new user - add to database
+}
+
+
 def server_program():
-    with ThreadPoolExecutor(max_workers=2) as executor:
+    with ThreadPoolExecutor(max_workers=1) as executor:
         executor.submit(admin_dashboard())
         executor.submit(receive_query_from_client())
 
