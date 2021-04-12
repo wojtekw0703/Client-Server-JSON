@@ -14,17 +14,20 @@ def connect_with_server():
 
 
 def msg_read(login):
-    pass
+    data_to_send = "read_message" + "-" + login
+    client_socket.send(data_to_send.encode())
+    messages = receive_data_from_server()
+    for data in messages:
+        print(data)
 
 
 def msg_send(login):
-    pass
+    message = input("Enter a message -> ")
+    data_to_send = "insert_message" + "-" + message + "-" + login
+    client_socket.send(data_to_send.encode())
 
 
 def user_dashboard(login):
-    # request to the server to check if the inbox is overflowed:
-    # code
-    user_mode()
     print("Send message (msg-send) | Read message (msg-read)")
     option = input("->")
 
@@ -32,12 +35,11 @@ def user_dashboard(login):
         msg_send(login)
     elif option.lower() == "msg-read":
         msg_read(login)
-    else:
-        exit(0)
 
 
 def user_mode():
-    data = []
+    data_to_send = ""
+
     print("Create | Login")
     option = input("->")
     print("\n")
@@ -51,12 +53,8 @@ def user_mode():
         new_password = input("->")
         print("\n")
 
-        data.append("insert_person")
-        data.append(new_login)
-        data.append(new_password)
-
-        to_send = pickle.dumps(data)
-        client_socket.send(to_send.encode())
+        data_to_send = "insert_person" + "-" + new_login + "-" + new_password
+        client_socket.send(data_to_send.encode())
 
         user_mode()
 
@@ -69,11 +67,8 @@ def user_mode():
         password = input("->")
         print("\n")
 
-        data.append("check_user")
-        data.append(login)
-        data.append(password)
-        to_send = pickle.dumps(data)
-        client_socket.send(to_send.encode())
+        data_to_send = "check_user" + "-" + login + "-" + password
+        client_socket.send(data_to_send.encode())
 
         result = receive_data_from_server()
         if result == "True":
@@ -89,14 +84,14 @@ def user_mode():
 def receive_data_from_server():
     while client_socket.recv(1024).decode() is None:
         data = client_socket.recv(1024).decode()
-        return data
+    return data
 
 
 def client_program():
+    connect_with_server()
     user_mode()
     client_socket.close()
 
 
 if __name__ == "__main__":
-    connect_with_server()
     client_program()

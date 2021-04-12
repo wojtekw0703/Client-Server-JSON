@@ -40,12 +40,12 @@ def uptime_fun():
     duration = end - start
     duration = round(duration, 2)
     print("life time: {0}s".format(str(duration)) + "\n")
-    display_admin_panel()
+    # display_admin_panel()
 
 
 def info_fun():
     print("created: {0}".format(str(created)) + "\n")
-    display_admin_panel()
+    # display_admin_panel()
 
 
 def read_messages_as_admin():
@@ -57,26 +57,41 @@ def read_messages_as_admin():
     for data in messages:
         print(data)
     print("\n")
-    display_admin_panel()
+    # display_admin_panel()
 
 
-def display_admin_panel():
-    print(
-        "--------ADMIN PANEL--------\n",
-        "option 1: uptime - returns server lifetime\n",
-        "option 2: info - returns the date the server was created\n",
-        "option 3: read_msg - displays all messages and their senders",
-    )
-    option = input("->")
-    return option
+# def display_admin_panel():
+#     print(
+#         "--------ADMIN PANEL--------\n",
+#         "option 1: uptime - returns server lifetime\n",
+#         "option 2: info - returns the date the server was created\n",
+#         "option 3: read_msg - displays all messages and their senders",
+#         "option 4: stop - end of program working",
+#     )
+#     option = input("->")
+#     return option
 
 
 def admin_dashboard():
-    option = display_admin_panel()
-    while option not in ["uptime", "info", "read_msg"]:
-        display_admin_panel()
-    redirection = command_handlers.get(display_admin_panel().lower(), "Invalid command")
-    redirection()
+    # option = display_admin_panel()
+    # while option not in ["uptime", "info", "read_msg"]:
+    #     option = display_admin_panel()
+    # redirection = command_handlers.get(option.lower(), "Invalid command")
+    # redirection()
+    while True:
+        print(
+            "--------ADMIN PANEL--------\n",
+            "option 1: uptime - returns server lifetime\n",
+            "option 2: info - returns the date the server was created\n",
+            "option 3: read_msg - displays all messages and their senders\n",
+            "option 4: stop - end of program working",
+        )
+        option = input("->")
+        if option.lower == "stop":
+            exit(1)
+        else:
+            redirection = command_handlers.get(option.lower(), "Invalid command")
+            redirection()
 
 
 def check_inbox(login):
@@ -137,15 +152,6 @@ def insert_person(data):
     connection.commit()
 
 
-def receive_query_from_client():
-    while True:
-        data = None
-        data = server_socket.recv(1024).decode()
-        if data is not None:
-            redirection = database_operations.get(data[0].lower(), "Invalid command")
-            redirection(data[1::])
-
-
 command_handlers = {
     "uptime": uptime_fun,  # returns the server life time
     "info": info_fun,  # returns date when the server was created
@@ -160,9 +166,28 @@ database_operations = {
 }
 
 
+def receive_query_from_client():
+    while True:
+        # receive data stream. it won't accept data packet greater than 1024 bytes
+        data = server_socket.recv(1024).decode()
+        if not data:
+            # if data is not received break
+            break
+        # print("Command from connected user: " + str(data))
+        # if data == "stop":
+        #     exit(0) # stop server app
+        else:
+            redirection = database_operations.get(data[0].lower(), "Invalid command")
+            redirection(data[1::])
+
+
 def server_program():
+    connect_database()
+    init_connection()
+    print("Connection from: " + str(address))
+    admin_dashboard()
+
     with ThreadPoolExecutor(max_workers=1) as executor:
-        executor.submit(admin_dashboard())
         executor.submit(receive_query_from_client())
 
     cursor.close()
@@ -170,7 +195,4 @@ def server_program():
 
 
 if __name__ == "__main__":
-    connect_database()
-    init_connection()
-    print("Connection from: " + str(address))
     server_program()
